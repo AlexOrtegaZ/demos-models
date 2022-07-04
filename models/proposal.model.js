@@ -27,6 +27,7 @@ class Proposal {
       this.expiredAt = '';
       this.approvalPercentage = undefined;
       this.participationPercentage = undefined;
+      this.insufficientVotes = undefined;
       this.createdBy = undefined;
       this.createdAt = undefined;
       this.updatedBy = undefined;

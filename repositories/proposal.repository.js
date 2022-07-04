@@ -106,15 +106,19 @@ class ProposalRepository extends DbHelper {
    * Update proposal status
    * @param {number} proposalId
    * @param {number} status
+   * @param {number} insufficientVotes
    * @param {number} userId
    * @returns {Promise<Proposal>}
    */
-  async updateProposalStatus(proposalId, status, userId) {
+  async updateProposalStatus(proposalId, status, insufficientVotes, userId) {
     const updateObject = {
       status,
     };
     if (userId) {
       updateObject.updated_by = userId;
+    }
+    if (insufficientVotes) {
+      updateObject.insufficient_votes = insufficientVotes;
     }
     const query = SqlQuery.update
       .into(this.tableName)
