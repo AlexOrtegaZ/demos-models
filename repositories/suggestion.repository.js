@@ -27,7 +27,13 @@ class SuggestionRepository extends DbHelper {
     this.tableName = 'suggestion';
     this.colId = 'suggestion_id';
   }
-
+  /**
+   * Creates a suggestion 
+   * @param {string} manifestoId 
+   * @param {number} status 
+   * @param {string} userId 
+   * @returns {Promise<Suggestion>}
+   */
   async createSuggestion(manifestoId, status, userId) {
     const newSuggestion = new Suggestion();
     newSuggestion.manifestoId = manifestoId;

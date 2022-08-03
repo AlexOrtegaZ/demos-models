@@ -27,6 +27,13 @@ const createSuggestionsCache = (eventName, userId, data) => {
   return CacheRepository.createCache(SUGGESTIONS, eventName, userId, data);
 };
 
+/**
+ * Notifies all members that a new suggestion has been created
+ * @param {string} spaceId 
+ * @param {string} suggestionId 
+ * @param {string} exceptForUserId 
+ * @return {void}
+ */
 const suggestionUpdated = async (spaceId, suggestionId, exceptForUserId) => {
   notifyEachActiveMemberOn(async member => {
     const data = { spaceId, suggestionId };
