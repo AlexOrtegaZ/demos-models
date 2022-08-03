@@ -23,6 +23,7 @@ class SuggestionParticipation {
     this.suggestionId = '';
     this.userId = '';
     this.memberId = '';
+    this.spaceId = '';
   }
 }
 

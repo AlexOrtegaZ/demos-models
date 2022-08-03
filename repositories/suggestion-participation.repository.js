@@ -28,11 +28,12 @@ class SuggestionParticipationRepository extends DbHelper {
     this.colId = 'suggestion_participation_id';
   }
 
-  createSuggestionParticipation(suggestionId, userId, memberId) {
+  createSuggestionParticipation(suggestionId, userId, memberId, spaceId) {
     const newSuggestionParticipation = new SuggestionParticipation();
     newSuggestionParticipation.suggestionId = suggestionId;
     newSuggestionParticipation.userId = userId;
     newSuggestionParticipation.memberId = memberId;
+    newSuggestionParticipation.spaceId = spaceId;
 
     return this.create(newSuggestionParticipation);
   } 
