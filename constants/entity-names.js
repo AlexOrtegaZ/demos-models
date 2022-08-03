@@ -22,7 +22,8 @@ const entityNames = {
   SPACE: 'space',
   PROPOSALS: 'proposals',
   COMMENTS: 'comments',
-  COMMENT_VOTES: 'comment-votes'
+  COMMENT_VOTES: 'comment-votes',
+  SUGGESTIONS: 'suggestions'
 };
 
 module.exports = entityNames;

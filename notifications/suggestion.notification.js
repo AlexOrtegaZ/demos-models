@@ -17,22 +17,24 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-const cacheService = require('../services/cache.service');
 const CacheRepository = require('../repositories/cache.repository');
-const MemberRepository = require('../repositories/member.repository');
-const { PUBLISHED, UPDATED } = require('../constants/event-names');
-const { PROPOSALS } = require('../constants/entity-names');
+const { PUBLISHED } = require('../constants/event-names');
+const { SUGGESTIONS } = require('../constants/entity-names');
+const notifyEachActiveMemberOn = require('./utils/utils');
 
 
 const createSuggestionsCache = (eventName, userId, data) => {
-  return CacheRepository.createCache(PROPOSALS, eventName, userId, data);
+  return CacheRepository.createCache(SUGGESTIONS, eventName, userId, data);
 };
 
-
-const suggestionUpdated = () => {
+const suggestionUpdated = async (spaceId, suggestionId, exceptForUserId) => {
+  notifyEachActiveMemberOn(async member => {
+    const data = { spaceId, suggestionId };
+    const { userId } = member;
+    await createSuggestionsCache(PUBLISHED, userId, data);
+  }, spaceId, exceptForUserId);
 };
 
 module.exports = {
-  createSuggestionsCache,
   suggestionUpdated
 };
