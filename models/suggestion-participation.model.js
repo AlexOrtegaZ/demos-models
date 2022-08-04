@@ -17,13 +17,14 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-const entityNames = {
-  MEMBERS: 'members',
-  SPACE: 'space',
-  PROPOSALS: 'proposals',
-  COMMENTS: 'comments',
-  COMMENT_VOTES: 'comment-votes',
-  SUGGESTIONS: 'suggestions'
-};
+class SuggestionParticipation {
+  constructor() {
+    this.suggestionParticipationId = '';
+    this.suggestionId = '';
+    this.userId = '';
+    this.memberId = '';
+    this.spaceId = '';
+  }
+}
 
-module.exports = entityNames;
+module.exports = SuggestionParticipation;
