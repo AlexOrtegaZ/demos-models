@@ -102,6 +102,23 @@ class ManifestoCommentRepository extends DbHelper {
     const result = await excuteQuery(query);
     return result;
   }
+  
+  /**
+   * Find all comments by manifestoCommentParentId
+   * @param {string[]} parentId
+   * @returns {Promise<ManifestoComment[]>}
+   */
+  async findAllByParentId(parentId) {
+    const query = sqlQuery.select
+      .from(this.tableName)
+      .where({
+        manifesto_comment_parent_id: parentId
+      })
+      .build();
+    
+    const result = await excuteQuery(query);
+    return result;
+  }
 }
 
 module.exports = new ManifestoCommentRepository();
