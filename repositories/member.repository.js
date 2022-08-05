@@ -112,19 +112,12 @@ class MemberRepository extends DbHelper {
   }
 
   async findBySpaceIdAndInvitationStatusSendedOrReceived(spaceId) {
-    const invitationStatusToIgnore = [
-      invitationStatusEnum.ACCEPTED,
-      invitationStatusEnum.CANCELED,
-      invitationStatusEnum.REJECTED,
-      invitationStatusEnum.EXPIRED
-    ];
-
     const query = SqlQuery.select
       .from(this.tableName)
       .where({
         space_id: spaceId,
         deleted: false,
-        invitation_status: SqlQuery.sql.not_in(invitationStatusToIgnore)
+        invitation_status: [invitationStatusEnum.SENDED, invitationStatusEnum.RECEIVED]
       })
       .order('created_at', 'A')
       .build();
