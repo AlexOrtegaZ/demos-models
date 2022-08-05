@@ -111,6 +111,28 @@ class MemberRepository extends DbHelper {
     return result;
   }
 
+  async findBySpaceIdAndInvitationStatusSendedOrReceived(spaceId) {
+    const invitationStatusToIgnore = [
+      invitationStatusEnum.ACCEPTED,
+      invitationStatusEnum.CANCELED,
+      invitationStatusEnum.REJECTED,
+      invitationStatusEnum.EXPIRED
+    ];
+
+    const query = SqlQuery.select
+      .from(this.tableName)
+      .where({
+        space_id: spaceId,
+        deleted: false,
+        invitation_status: SqlQuery.sql.not_in(invitationStatusToIgnore)
+      })
+      .order('created_at', 'A')
+      .build();
+
+    const result = await excuteQuery(query);
+    return result;
+  }
+
   async findAllBySpaceIds(spaceIds) {
     const invitationStatusToIgnore = [invitationStatusEnum.CANCELED, invitationStatusEnum.REJECTED];
 
