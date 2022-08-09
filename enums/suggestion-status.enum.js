@@ -17,13 +17,11 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-const entityNames = {
-  MEMBERS: 'members',
-  SPACE: 'space',
-  PROPOSALS: 'proposals',
-  COMMENTS: 'comments',
-  COMMENT_VOTES: 'comment-votes',
-  SUGGESTIONS: 'suggestions'
+const suggestionStatusEnum = {
+  DRAFT: 0,
+  OPEN: 1,
+  CLOSED: 2,
+  DELETED: 3
 };
 
-module.exports = entityNames;
+module.exports = suggestionStatusEnum;
