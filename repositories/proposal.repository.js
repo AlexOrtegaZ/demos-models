@@ -61,7 +61,7 @@ class ProposalRepository extends DbHelper {
    * @param {number} participationPercentage
    * @returns {Promise<Proposal>}
    */
-  async createProposal(manifestoId, status, spaceId, userId, expireOnHours,approvalPercentage, participationPercentage) {
+  async createProposal(manifestoId, status, spaceId, userId, expireOnHours, approvalPercentage, participationPercentage) {
     const newProposal = new Proposal();
     newProposal.manifestoId = manifestoId;
     newProposal.status = status;
