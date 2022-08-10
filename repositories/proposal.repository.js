@@ -61,13 +61,14 @@ class ProposalRepository extends DbHelper {
    * @param {number} participationPercentage
    * @returns {Promise<Proposal>}
    */
-  async createProposal(manifestoId, status, spaceId, userId, approvalPercentage, participationPercentage) {
+  async createProposal(manifestoId, status, spaceId, userId, expireOnHours,approvalPercentage, participationPercentage) {
     const newProposal = new Proposal();
     newProposal.manifestoId = manifestoId;
     newProposal.status = status;
     newProposal.spaceId = spaceId;
     newProposal.createdBy = userId;
     newProposal.updatedBy = userId;
+    newProposal.expireOnHours = expireOnHours;
     newProposal.expiredAt = this._getExpirationDateOnIsoString();
     newProposal.approvalPercentage = approvalPercentage;
     newProposal.participationPercentage = participationPercentage;
@@ -84,13 +85,14 @@ class ProposalRepository extends DbHelper {
    * @param {number} participationPercentage
    * @returns {Promise<Proposal>}
    */
-  async updateProposal(proposalId, status, userId, approvalPercentage, participationPercentage) {
+  async updateProposal(proposalId, status, userId, expireOnHours, approvalPercentage, participationPercentage) {
     const expiredAt = this._getExpirationDateOnIsoString();
 
     const query = SqlQuery.update
       .into(this.tableName)
       .set({
         status,
+        expireOnHours: expireOnHours,
         expired_at: expiredAt,
         approval_percentage: approvalPercentage,
         participation_percentage: participationPercentage,
