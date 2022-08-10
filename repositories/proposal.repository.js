@@ -69,7 +69,7 @@ class ProposalRepository extends DbHelper {
     newProposal.createdBy = userId;
     newProposal.updatedBy = userId;
     newProposal.expireOnHours = expireOnHours;
-    newProposal.expiredAt = this._getExpirationDateOnIsoString();
+    newProposal.expiredAt = this._getExpirationDateOnIsoString(expireOnHours);
     newProposal.approvalPercentage = approvalPercentage;
     newProposal.participationPercentage = participationPercentage;
 
@@ -86,7 +86,7 @@ class ProposalRepository extends DbHelper {
    * @returns {Promise<Proposal>}
    */
   async updateProposal(proposalId, status, userId, expireOnHours, approvalPercentage, participationPercentage) {
-    const expiredAt = this._getExpirationDateOnIsoString();
+    const expiredAt = this._getExpirationDateOnIsoString(expireOnHours);
 
     const query = SqlQuery.update
       .into(this.tableName)
@@ -166,10 +166,10 @@ class ProposalRepository extends DbHelper {
     return result;
   }
 
-  _getExpirationDateOnIsoString() {
+  _getExpirationDateOnIsoString(expireOnHours) {
     const dateMilliseconds = new Date().getTime();
     const millisecondsInAnHour = 1000 * 60 * 60;
-    const expirationDateOnMilliseconds = dateMilliseconds + millisecondsInAnHour * 3;
+    const expirationDateOnMilliseconds = dateMilliseconds + millisecondsInAnHour * expireOnHours;
 
     return toIsoString(new Date(expirationDateOnMilliseconds));
   }
