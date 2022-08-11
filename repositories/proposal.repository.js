@@ -92,7 +92,7 @@ class ProposalRepository extends DbHelper {
       .into(this.tableName)
       .set({
         status,
-        expireOnHours: expireOnHours,
+        expire_on_hours: expireOnHours,
         expired_at: expiredAt,
         approval_percentage: approvalPercentage,
         participation_percentage: participationPercentage,
