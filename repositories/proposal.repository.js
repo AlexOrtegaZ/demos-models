@@ -86,18 +86,21 @@ class ProposalRepository extends DbHelper {
    * @returns {Promise<Proposal>}
    */
   async updateProposal(proposalId, status, userId, expireOnHours, approvalPercentage, participationPercentage) {
-    const expiredAt = this._getExpirationDateOnIsoString(expireOnHours);
+    const updateObject = {
+      status,
+      approval_percentage: approvalPercentage,
+      participation_percentage: participationPercentage,
+      updated_by: userId,
+    };
+
+    if (expireOnHours) {
+      updateObject.expire_on_hours = expireOnHours;
+      updateObject.expired_at = this._getExpirationDateOnIsoString(expireOnHours);
+    }
 
     const query = SqlQuery.update
       .into(this.tableName)
-      .set({
-        status,
-        expire_on_hours: expireOnHours,
-        expired_at: expiredAt,
-        approval_percentage: approvalPercentage,
-        participation_percentage: participationPercentage,
-        updated_by: userId,
-      })
+      .set(updateObject)
       .where({ [this.colId]: proposalId })
       .build();
     await excuteQuery(query);
