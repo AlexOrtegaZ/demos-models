@@ -61,14 +61,15 @@ class ProposalRepository extends DbHelper {
    * @param {number} participationPercentage
    * @returns {Promise<Proposal>}
    */
-  async createProposal(manifestoId, status, spaceId, userId, approvalPercentage, participationPercentage) {
+  async createProposal(manifestoId, status, spaceId, userId, expireOnHours, approvalPercentage, participationPercentage) {
     const newProposal = new Proposal();
     newProposal.manifestoId = manifestoId;
     newProposal.status = status;
     newProposal.spaceId = spaceId;
     newProposal.createdBy = userId;
     newProposal.updatedBy = userId;
-    newProposal.expiredAt = this._getExpirationDateOnIsoString();
+    newProposal.expireOnHours = expireOnHours;
+    newProposal.expiredAt = this._getExpirationDateOnIsoString(expireOnHours);
     newProposal.approvalPercentage = approvalPercentage;
     newProposal.participationPercentage = participationPercentage;
 
@@ -84,18 +85,22 @@ class ProposalRepository extends DbHelper {
    * @param {number} participationPercentage
    * @returns {Promise<Proposal>}
    */
-  async updateProposal(proposalId, status, userId, approvalPercentage, participationPercentage) {
-    const expiredAt = this._getExpirationDateOnIsoString();
+  async updateProposal(proposalId, status, userId, expireOnHours, approvalPercentage, participationPercentage) {
+    const updateObject = {
+      status,
+      approval_percentage: approvalPercentage,
+      participation_percentage: participationPercentage,
+      updated_by: userId,
+    };
+
+    if (expireOnHours) {
+      updateObject.expire_on_hours = expireOnHours;
+      updateObject.expired_at = this._getExpirationDateOnIsoString(expireOnHours);
+    }
 
     const query = SqlQuery.update
       .into(this.tableName)
-      .set({
-        status,
-        expired_at: expiredAt,
-        approval_percentage: approvalPercentage,
-        participation_percentage: participationPercentage,
-        updated_by: userId,
-      })
+      .set(updateObject)
       .where({ [this.colId]: proposalId })
       .build();
     await excuteQuery(query);
@@ -164,10 +169,10 @@ class ProposalRepository extends DbHelper {
     return result;
   }
 
-  _getExpirationDateOnIsoString() {
+  _getExpirationDateOnIsoString(expireOnHours) {
     const dateMilliseconds = new Date().getTime();
     const millisecondsInAnHour = 1000 * 60 * 60;
-    const expirationDateOnMilliseconds = dateMilliseconds + millisecondsInAnHour * 3;
+    const expirationDateOnMilliseconds = dateMilliseconds + millisecondsInAnHour * expireOnHours;
 
     return toIsoString(new Date(expirationDateOnMilliseconds));
   }
