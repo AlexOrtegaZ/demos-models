@@ -21,9 +21,20 @@ const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const spaceMember = require('./space-member.middleware');
 
-const spaceRoles = (roles) => async (req, res, next) => {
-  const { member } = req;
 
+const spaceRoles = (roles, retry = 0) => async (req, res, next) => {
+  const { member } = req;
+  if (!member) {
+    if (retry === 3) {
+      return next(
+        new ApiError(
+          httpStatus.BAD_REQUEST,
+          'Memeber not found.'
+        )
+      );
+    }
+    return setTimeout(() =>  spaceRoles(roles, retry ++)(req, res, next), 500);
+  }
   if (roles.every((r) => member.role !== r)) {
     return next(
       new ApiError(
