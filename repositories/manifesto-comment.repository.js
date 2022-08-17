@@ -102,6 +102,28 @@ class ManifestoCommentRepository extends DbHelper {
     const result = await excuteQuery(query);
     return result;
   }
+
+  /**
+   * @param {string} manifestoCommentParentId
+   * @returns {Promise<number>}
+   */
+   async getNumberOfReplies(manifestoCommentParentId) {
+    const query = sqlQuery.select
+      .from(this.tableName)
+      .where({
+        manifesto_comment_parent_id: manifestoCommentParentId,
+      })
+      .count()
+      .build();
+
+    const result = await excuteQuery(query);
+
+    const numberOfReplies = parseInt(result[0][
+      'count'
+    ]);
+
+    return numberOfReplies;
+   }
   
   /**
    * Find all comments by manifestoCommentParentId
