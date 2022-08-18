@@ -18,37 +18,27 @@
 */
 
 const httpStatus = require('http-status');
+const manifestoCommentRepository = require('../repositories/manifesto-comment.repository');
 const ApiError = require('../utils/ApiError');
-const spaceMember = require('./space-member.middleware');
 
+const deleteComment = async (req, _, next) => {
+  const { memberId } = req.member;
+  const { manifestoCommentId } = req.params;
 
-const spaceRoles = (roles, retry = 0) => async (req, res, next) => {
-  const { member } = req;
-  if (!member) {
-    if (retry === 3) {
-      return next(
-        new ApiError(
-          httpStatus.BAD_REQUEST,
-          'Memeber not found.'
-        )
-      );
-    }
-    return setTimeout(() =>  spaceRoles(roles, retry ++)(req, res, next), 500);
+  const manifestoComment = await manifestoCommentRepository.findById(manifestoCommentId);
+  if (!manifestoComment) {
+    return next(new ApiError(httpStatus.NOT_FOUND, 'Manifesto comment not found'));
   }
-  if (roles.every((r) => member.role !== r)) {
-    return next(
-      new ApiError(
-        httpStatus.BAD_REQUEST,
-        'This user do not have the correct role on this space to do the current operation.'
-      )
-    );
+
+  if (manifestoComment.deleted) {
+    return next(new ApiError(httpStatus.BAD_REQUEST, 'Comment is deleted'));
+  }
+
+  if (manifestoComment.createdByMember !== memberId) {
+    return next(new ApiError(httpStatus.BAD_REQUEST, 'Comment does not belong to this member'));
   }
 
   return next();
 };
 
-const combineSpaceRolesValidation = (...roles) => {
-  return [spaceMember, spaceRoles(roles)];
-};
-
-module.exports = combineSpaceRolesValidation;
+module.exports = deleteComment;

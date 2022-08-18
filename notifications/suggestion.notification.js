@@ -17,30 +17,31 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-const { COMMENTS } = require('../constants/entity-names');
-const { PUBLISHED, UPDATED } = require('../constants/event-names');
 const CacheRepository = require('../repositories/cache.repository');
+const { PUBLISHED } = require('../constants/event-names');
+const { SUGGESTIONS } = require('../constants/entity-names');
 const notifyEachActiveMemberOn = require('./utils/utils');
 
-const createCommentCache = (eventName, userId, data) => {
-  return CacheRepository.createCache(COMMENTS, eventName, userId, data);
+
+const createSuggestionsCache = (eventName, userId, data) => {
+  return CacheRepository.createCache(SUGGESTIONS, eventName, userId, data);
 };
 
-const newComment = async (spaceId, manifestoCommentId, userId) => {
-  notifyEachActiveMemberOn(async (member) => {
-    const data = { spaceId, manifestoCommentId };
-    await createCommentCache(PUBLISHED, member.userId, data);
-  }, spaceId, userId);
-};
-
-const updateComment = async (spaceId, manifestoCommentId, userId) => {
-  notifyEachActiveMemberOn(async (member) => {
-    const data = { spaceId, manifestoCommentId };
-    await createCommentCache(UPDATED, member.userId, data);
-  }, spaceId, userId);
+/**
+ * Notifies all members that a new suggestion has been created
+ * @param {string} spaceId 
+ * @param {string} suggestionId 
+ * @param {string} exceptForUserId 
+ * @return {void}
+ */
+const suggestionUpdated = async (spaceId, suggestionId, exceptForUserId) => {
+  notifyEachActiveMemberOn(async member => {
+    const data = { spaceId, suggestionId };
+    const { userId } = member;
+    await createSuggestionsCache(PUBLISHED, userId, data);
+  }, spaceId, exceptForUserId);
 };
 
 module.exports = {
-  newComment,
-  updateComment,
+  suggestionUpdated
 };

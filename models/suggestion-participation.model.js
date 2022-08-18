@@ -17,23 +17,14 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-const httpStatus = require('http-status');
-const manifestoCommentRepository = require('../repositories/manifesto-comment.repository');
-const ApiError = require('../utils/ApiError');
-
-const isSubComment = async (req, res, next) => {
-  const { manifestoCommentParentId } = req.params;
-
-  const manifestoComment = await manifestoCommentRepository.findById(manifestoCommentParentId);
-  if (!manifestoComment) {
-    return next(new ApiError(httpStatus.NOT_FOUND, 'Manifesto comment not found'));
+class SuggestionParticipation {
+  constructor() {
+    this.suggestionParticipationId = '';
+    this.suggestionId = '';
+    this.userId = '';
+    this.memberId = '';
+    this.spaceId = '';
   }
+}
 
-  if (manifestoComment.manifestoCommentParentId) {
-    return next(new ApiError(httpStatus.BAD_REQUEST, 'This comment cannot have a sub comment'));
-  }
-
-  return next();
-};
-
-module.exports = isSubComment;
+module.exports = SuggestionParticipation;

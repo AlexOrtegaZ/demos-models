@@ -16,12 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
-const { Client } = require('pg');
-
-function createPgClient() {
-  return new Client({ ssl: { rejectUnauthorized: false } });
-}
+const createPgClient = require('../utils/createPgClient');
 
 function convertPropNameToColumnNotation(fieldName) {
   return fieldName
@@ -90,7 +85,6 @@ module.exports = {
   getColumnsAndValues,
   convertPropNameToCamelCase,
   mapObjectToCamelCased,
-  createPgClient,
   excuteQueryWithValuesDeprecated,
   excuteQuery,
 };

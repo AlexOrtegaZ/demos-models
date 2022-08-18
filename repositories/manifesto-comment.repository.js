@@ -19,7 +19,7 @@
 
 const DbHelper = require('./db.helper');
 const ManifestoComment = require('../models/manifesto-comment.model');
-const SqlQuery = require('../utils/sqlQuery');
+const sqlQuery = require('../utils/sqlQuery');
 const { excuteQuery } = require('./db.utils');
 
 class ManifestoCommentRepository extends DbHelper {
@@ -47,6 +47,44 @@ class ManifestoCommentRepository extends DbHelper {
 
     return this.create(newComment);
   }
+  
+  /**
+   * @param {string} manifestoCommentId
+   * @returns {Promise<ManifestoComment>}
+   */
+  async deleteComment(manifestoCommentId) {
+    const query = sqlQuery.update
+      .into(this.tableName)
+      .set({
+        deleted: true,
+        content: ''
+      })
+      .where({
+        manifesto_comment_id: manifestoCommentId,
+      }).build();
+
+    await excuteQuery(query);
+    return this.findById(manifestoCommentId);
+  }
+
+  /**
+   * @param {string} manifestoCommentId
+   * @param {string} content
+   * @returns {Promise<ManifestoComment>}
+   */
+   async updateComment(manifestoCommentId, content) {
+    const query = sqlQuery.update
+      .into(this.tableName)
+      .set({
+        content
+      })
+      .where({
+        manifesto_comment_id: manifestoCommentId,
+      }).build();
+
+    await excuteQuery(query);
+    return this.findById(manifestoCommentId);
+  }
 
   /**
    * Find all manifestos by manifestoIds
@@ -61,6 +99,45 @@ class ManifestoCommentRepository extends DbHelper {
       })
       .build();
 
+    const result = await excuteQuery(query);
+    return result;
+  }
+
+  /**
+   * @param {string} manifestoCommentParentId
+   * @returns {Promise<number>}
+   */
+   async getNumberOfReplies(manifestoCommentParentId) {
+    const query = sqlQuery.select
+      .from(this.tableName)
+      .where({
+        manifesto_comment_parent_id: manifestoCommentParentId,
+      })
+      .count()
+      .build();
+
+    const result = await excuteQuery(query);
+
+    const numberOfReplies = parseInt(result[0][
+      'count'
+    ]);
+
+    return numberOfReplies;
+   }
+  
+  /**
+   * Find all comments by manifestoCommentParentId
+   * @param {string[]} parentId
+   * @returns {Promise<ManifestoComment[]>}
+   */
+  async findAllByParentId(parentId) {
+    const query = sqlQuery.select
+      .from(this.tableName)
+      .where({
+        manifesto_comment_parent_id: parentId
+      })
+      .build();
+    
     const result = await excuteQuery(query);
     return result;
   }
