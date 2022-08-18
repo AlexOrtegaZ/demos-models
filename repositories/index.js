@@ -18,6 +18,14 @@
 */
 
 module.exports.CacheRepository = require('./cache.repository');
-module.exports.SpaceRepository = require('./space.repository');
+module.exports.ManifestoCommentVoteRepository = require('./manifesto-comment-vote.repository');
+module.exports.ManifestoCommentRepository = require('./manifesto-comment.repository');
+module.exports.ManifestoOptionRepository = require('./manifesto-option.repository');
+module.exports.ManifestoRepository = require('./manifesto.repository');
 module.exports.MemberRepository = require('./member.repository');
+module.exports.ProposalParticipationRepository = require('./proposal-participation.repository');
+module.exports.ProposalVoteRepository = require('./proposal-vote.repository');
+module.exports.ProposalRepository = require('./proposal.repository');
+module.exports.SpaceRepository = require('./space.repository');
 module.exports.UserRepository = require('./user.repository');
+module.exports.UserDeviceRepository = require('./user-device.repository');

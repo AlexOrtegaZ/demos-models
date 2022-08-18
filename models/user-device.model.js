@@ -17,13 +17,15 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-module.exports.Cache = require('./cache.model');
-module.exports.Space = require('./space.model');
-module.exports.User = require('./user.model');
-module.exports.UserDevice = require('./user-device.model');
-module.exports.Manifesto = require('./manifesto.model');
-module.exports.ManifestoOption = require('./manifesto-option.model');
-module.exports.Member = require('./member.model');
-module.exports.Proposal = require('./proposal.model');
-module.exports.ProposalParticipation = require('./proposal-participation.model');
-module.exports.ProposalVote = require('./proposal-vote.model');
+class UserDevice {
+    constructor() {
+      this.userDeviceId = '';
+      this.userId = '';
+      this.deviceId = '';
+      this.createdAt = undefined;
+      this.updatedAt = undefined;
+    }
+  }
+  
+  module.exports = UserDevice;
+  
