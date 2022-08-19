@@ -21,6 +21,8 @@ const DbHelper = require('./db.helper');
 const SqlQuery = require('../utils/sqlQuery');
 const { excuteQuery } = require('./db.utils');
 const { UserDevice } = require('../models');
+const invitationStatusEnum = require('../enums/invitation-status.enum');
+const MemberRepository = require('./member.repository');
 
 class UserDeviceRepository extends DbHelper {
   constructor() {
@@ -31,42 +33,74 @@ class UserDeviceRepository extends DbHelper {
   }
 
   /**
- * Find
- * @param {string} userId
- * @returns {Promise<UserDevice[]>}
- */
+   * Find All by user id
+   * @param {string} userId
+   * @returns {Promise<UserDevice[]>}
+   */
   async findAllByUserId(userId) {
     const query = SqlQuery.select
       .from(this.tableName)
       .where({
-        user_id: userId
+        user_id: userId,
       })
       .build();
 
     return await excuteQuery(query);
   }
 
+  /**
+   * Find All UserDevice by spaceId
+   * @param {string} spaceId
+   * @returns {Promise<UserDevice[]>}
+   */
+  async findAllBySpaceId(spaceId) {
+    const query = SqlQuery.select
+      .from(this.tableName)
+      .select('device_id', 'user_id')
+      .from(MemberRepository.tableName, 'user_id', 'user_id', { joinType: 'inner' })
+      .where({ space_id: spaceId, deleted: false, invitation_status: invitationStatusEnum.ACCEPTED, })
+      .build();
+    const result = await excuteQuery(query);
+    return result;
+  }
+  /**
+   * Find One UserDevice by deviceId
+   * @param {string} deviceId
+   * @returns {Promise<UserDevice>}
+   */
   async findOneByDeviceId(deviceId) {
     const query = SqlQuery.select
       .from(this.tableName)
       .where({
-        device_id: deviceId
+        device_id: deviceId,
       })
       .limit(1)
       .build();
 
-      const result = await excuteQuery(query);
-      return result[0];
+    const result = await excuteQuery(query);
+    return result[0];
   }
 
+  /**
+   * Check if the deviceId is already register, otherwise is created
+   * @param {string} userId
+   * @param {string} deviceId
+   * @returns {Promise<UserDevice>}
+   */
   async createOrUpdate(userId, deviceId) {
-    const userDevice = await this.findOneByDeviceId(deviceId);
-    if (userDevice !== undefined) {
+    const userDeviceByDeviceId = await this.findOneByDeviceId(deviceId);
+    if (userDeviceByDeviceId !== undefined) {
       return this.update(userDevice.userDeviceId, userId, deviceId);
     }
     return this.createUserDevice(userId, deviceId);
   }
 
+  /**
+   * Create a UserDevice
+   * @param {string} userId
+   * @param {string} deviceId
+   * @returns {Promise<UserDevice>}
+   */
   createUserDevice(userId, deviceId) {
     const userDevice = new UserDevice();
     userDevice.userId = userId;
@@ -74,12 +108,18 @@ class UserDeviceRepository extends DbHelper {
     return this.create(userDevice);
   }
 
+  /**
+   * Update a UserDevice
+   * @param {string} userId
+   * @param {string} deviceId
+   * @returns {Promise<UserDevice>}
+   */
   async update(userDeviceId, userId, deviceId) {
     const query = SqlQuery.update
       .into(this.tableName)
       .set({
         user_id: userId,
-        device_id: deviceId 
+        device_id: deviceId,
       })
       .where({ [this.colId]: userDeviceId })
       .build();
