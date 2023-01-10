@@ -25,6 +25,7 @@ class Proposal {
       this.progressStatus = '';
       this.spaceId = '';
       this.expiredAt = '';
+      this.isCompleted = false;
       this.approvalPercentage = undefined;
       this.participationPercentage = undefined;
       this.insufficientVotes = undefined;

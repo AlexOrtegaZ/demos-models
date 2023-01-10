@@ -164,6 +164,25 @@ class ProposalRepository extends DbHelper {
     return result;
   }
 
+  /**
+   * Update the expiration date and marck proposal as completed
+   * @param {string[]} spaceIds
+   * @returns {Promise<void>}
+   */
+  async markProposalAsCompleted(proposalId) {
+    const expiredAt = this._getShortExpirationDateOnIsoString();
+
+    const query = SqlQuery.update
+      .into(this.tableName)
+      .set({
+        expired_at: expiredAt,
+        is_completed: true
+      })
+      .where({ [this.colId]: proposalId })
+      .build();
+    await excuteQuery(query);
+  }
+
   _getExpirationDateOnIsoString() {
     const dateMilliseconds = new Date().getTime();
     const millisecondsInAnHour = 1000 * 60 * 60;
@@ -171,6 +190,15 @@ class ProposalRepository extends DbHelper {
 
     return toIsoString(new Date(expirationDateOnMilliseconds));
   }
+
+  _getShortExpirationDateOnIsoString() {
+    const dateMilliseconds = new Date().getTime();
+    const millisecondsPerMinute = 1000 * 60;
+    const expirationDateOnMilliseconds = dateMilliseconds + millisecondsPerMinute * 10;
+
+    return toIsoString(new Date(expirationDateOnMilliseconds));
+  }
+
 }
 
 module.exports = new ProposalRepository();
