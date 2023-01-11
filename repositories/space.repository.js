@@ -90,6 +90,11 @@ class SpaceRepository extends DbHelper {
     space.ownerId = currentUser.userId;
     return this.create(space);
   }
+
+  async saveChatId(spaceId, chatId) {
+    const query = SqlQuery.update.into(this.tableName).set({ telegram_chat_id: chatId }).where({ space_id: spaceId }).build();
+    return excuteQuery(query);
+  }
 }
 
 module.exports = new SpaceRepository();
